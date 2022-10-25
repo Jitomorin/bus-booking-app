@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { auth } from "../firebase/firebase";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Image from "next/image";
+import LogoTrans from '../public/logo/classic_coast_logo_trans.svg'
 
 const Login = () => {
   const router = useRouter();
@@ -20,6 +22,8 @@ const Login = () => {
 
   return (
     <div className=" min-h-screen w-screen bg-bg_color">
+      <div className="mx-auto w-64 h-48 overflow-hidden"><Image  src={LogoTrans} alt="Classic Coast Logo" /></div>
+      
       <h1 className="text-dark_blue  font-khand font-bold text-center text-4xl">
         Log In
       </h1>
