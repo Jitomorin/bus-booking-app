@@ -45,7 +45,7 @@ const Login = () => {
         />
         <button
           onClick={login}
-          className="border-4 bg-pink_red p-2 w-3/4 mx-auto rounded-xl"
+          className="border-4 bg-pink_red text-white p-2 w-3/4 mx-auto rounded-xl"
         >
           {isLoading ? "Loading..." : "Log In"}
         </button>

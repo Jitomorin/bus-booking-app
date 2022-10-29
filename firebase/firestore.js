@@ -1,13 +1,7 @@
 import { firestore } from './firebase'
+import { v4 as uuidv4 } from 'uuid';
 
-// function addUser(email) {
-//   firestoredb.settings({
-//     timestampsInSnapshots: true //read timestamps in firestore
-//   })
-//   firestoredb.collection('users').add({
-//     email: email,
-//   })
-// }
+
 function addUser(email,uid,fullname,IDnum,isAdmin) {
   
   firestore.collection('users').doc(uid).set({
@@ -30,6 +24,26 @@ function getUserDetails(uid) {
     console.log(snapshot.data())
   })
 }
+function setStops() {
+  
+  const stops = ['ARUSHA','BAMBURI','CHANGAMWE','KILIFI','KISUMU','MACHAKOS','MARIAKANI','MALINDI','MOMBASA','VOI']
+
+  stops.forEach((stop) => { 
+    const uid=uuidv4()
+    firestore.collection('stops').doc(uid).set({
+      name: stop,
+      uid: uid,
+    }).catch((error) => {
+      console.log(error)
+    })
+  })
+}
+async function getStops() {
+  firestore.collection('stops').get().then(function (snapshot) { 
+    console.log(snapshot)
+    return snapshot
+  })
+}
 
 
-export {addUser,getAllUsers,getUserDetails}
+export {addUser,getAllUsers,getUserDetails,setStops,getStops}

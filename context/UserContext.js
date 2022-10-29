@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const getUser = async () => {
       auth.onAuthStateChanged(async (user) => {
+        console.log('Authetication state s changing...')
         const userDetails = await firestore
           .collection("users")
           .doc(user?.uid)
@@ -26,6 +27,11 @@ export const AuthProvider = ({ children }) => {
   const value = {
     currentUser,
   };
+ 
 
   return <authContext.Provider value={value}>{children}</authContext.Provider>;
 };
+export function useAuthContext() {
+   
+    return useContext(authContext);
+  }
