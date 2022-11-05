@@ -8,15 +8,19 @@ import Image from "next/image";
 import { getStops, setStops } from "../firebase/firestore";
 import { firestore } from "../firebase/firebase";
 import Select from "react-select";
+import { useRouter } from "next/router";
+import { Alert } from "@mui/material";
 
 const Home = () => {
-  const authContext = useAuthContext();
+  const  {currentUser,isUserLoading} = useAuthContext();
+  const router = useRouter();
   const [amount, setAmount] = useState(1);
   const [date, setDate] = useState(new Date());
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [stops, setStops] = useState([]);
   const [selectedFrom, setSelectedFrom] = useState("");
   const [selectedTo, setSelectedTo] = useState("");
+  var route_uid
 
   const getOptions = () => {
     const options = stops.map((stop) => {
@@ -24,7 +28,39 @@ const Home = () => {
     });
     return options;
   };
+  // const isUserLoggedIn = () => {
+  //   if (authContext.user) {
+  //   } else {
+  //     routes.push("/login");
+  //   }
+  // };
+
+  const getRoutes = async () => {
+    setLoading(true);
+    await firestore
+      .collection("routes")
+      .where("from.name", "==", selectedFrom)
+      .where("to.name", "==", selectedTo)
+      .get()
+      .then((snapshot) => {
+        const data = [];
+        snapshot.docs.forEach((doc) => {
+          data = doc.data();
+        });
+
+        route_uid = data.uid;
+      });
+    setLoading(false);
+  };
   useEffect(() => {
+      
+    if (!isUserLoading && !currentUser) {
+      console.log('something is wrong')
+      console.log(isUserLoading)
+      console.log(currentUser)
+      router.push("/");
+    } 
+
     const getStopsList = async () => {
       await firestore
         .collection("stops")
@@ -38,9 +74,25 @@ const Home = () => {
         });
     };
     getStopsList();
-  }, []);
+    // setToOptions(getToOptions());
+    // getToOptions().then((options) => {
+    //   console.log(options);
+    //   setToOptions(options);
+    // });
+  }, [currentUser,isUserLoading]);
   const options = getOptions();
-  return (
+  // function timeout(delay) {
+  //   return new Promise((res) => setTimeout(res, delay));
+  // }
+  // isUserLoggedIn();
+  if (isUserLoading) {  
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <Image src={LoadingAnimaton} alt="Loading..." />
+      </div>
+    );
+  } else {
+    return (
     <div className="min-h-screen w-screen">
       <Header />
       <div className="bg-[url('../public/images/stock-banner.jpg')] bg-no-repeat bg-cover bg-center h-[40vh] relative ">
@@ -65,7 +117,7 @@ const Home = () => {
               placeholder="To"
             /> */}
             <Select
-              className="border-l-2 p-3 focus:outline-none"
+              className="outline-none p-3 focus:outline-none"
               options={options}
               placeholder="To"
               onChange={(e) => {
@@ -90,13 +142,30 @@ const Home = () => {
               placeholder="Date"
             />
             <button
-              onClick={() => {
-                console.log("from: " + selectedFrom);
-                console.log("to: " + selectedTo);
+              onClick={async () => {
+               
+                await getRoutes().then((data) => {
+                  console.log(route_uid);
+
+                  router.push(
+                    {
+                      pathname: "/results",
+                      query: {
+                        route: route_uid,
+                        from: selectedFrom,
+                        to: selectedTo,
+                        amount: amount,
+                        date: date,
+                      },
+                    },
+                    "/results"
+                  );
+                });
+                // console.log(r_uid);
               }}
               className="bg-pink_red rounded-md p-2 text-white mx-2"
             >
-              Book now
+              {loading ? "Loading..." : "Book Now"}
             </button>
           </div>
         </div>
@@ -119,10 +188,11 @@ const Home = () => {
             <div className="bg-[url('../public/images/book.jpg')] bg-cover h-56 w-64 rounded-md mx-auto"></div>
             <p className="text-center">Print or present digitally</p>
           </div>
-        </div>
+          </div>
       </section>
     </div>
   );
+  }
 };
 
 export default Home;

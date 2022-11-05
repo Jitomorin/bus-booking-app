@@ -7,7 +7,10 @@ import { auth } from "../firebase/firebase";
 import { useRouter } from "next/router";
 
 const Header = () => {
-  const authContext = useAuthContext();
+  const {
+    currentUser,
+   isUserLoading
+  } = useAuthContext();
   const router = useRouter();
   return (
     <div>
@@ -27,7 +30,7 @@ const Header = () => {
                 <div className="ml-10 flex items-baseline space-x-11">
                   <Link
                     className="text-gray-300  hover:text-gray-800 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                    href="/#"
+                    href="/home"
                   >
                     Home
                   </Link>
@@ -38,19 +41,19 @@ const Header = () => {
                   >
                     How it works
                   </Link>
-                  <Link
+                  {
+                    currentUser.admin ? (
+                    <Link
                     className="text-gray-300  hover:text-gray-800 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                    href="/#"
-                  >
-                    <button
-                      onClick={() => {
-                        console.log(authContext.currentUser.admin);
-                      }}
-                      className="bg-pink_red rounded-md p-2 text-white"
-                    >
-                      Book now
-                    </button>
+                    href="/admin"
+                      >
+                        <span className="underline text-pink_red cursor-pointer">Admin</span>
+                    
                   </Link>
+                    ): (
+                      <></>
+                    )
+                  }
                   <a
                     onClick={async () => {
                       await auth
@@ -62,7 +65,7 @@ const Header = () => {
                           console.log(error);
                         });
 
-                      router.push("/login");
+                      router.push("/");
                     }}
                     className="underline text-pink_red cursor-pointer"
                   >

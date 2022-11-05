@@ -1,7 +1,8 @@
---------------------------------ToDo----------------------------------
+-------------------------------------------ToDo-------------------------------------------
 ---Find image for Ticket part in how it works section
+---change bus logo in results page
 
-_______Brainstorm_________________
+___________________________________________Brainstorm___________________________________________
 -routes will be an object with two keys: From and To. 
 -routes will also have unique ID
 -in the search when inputting in the 'From' field any stop can be picked 
@@ -9,3 +10,6 @@ _______Brainstorm_________________
 -both To and From will be a specific stop
 -stop will have its own collection which will be defined by its unique id from UUID nom package
 -stops will be an object.
+-buses will have a doc name of a uid 
+-each bus will have a uid
+-buses have: Number plates, Amount of Seats in the bus, uid of route, departure time

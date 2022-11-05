@@ -6,26 +6,32 @@ export function useAuth() {
   return useContext(authContext);
 }
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState();
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isUserLoading, setIsUserLoading] = useState(true);
 
   useEffect(() => {
     const getUser = async () => {
       auth.onAuthStateChanged(async (user) => {
+        setIsUserLoading(true)
         console.log('Authetication state s changing...')
-        const userDetails = await firestore
+        await firestore
           .collection("users")
           .doc(user?.uid)
-          .get();
-        const data = userDetails.data();
+          .get().then((doc) => { 
+            const data = doc.data();
         console.log("User context: " + data);
         setCurrentUser(data || undefined);
         //add check if data is undefined
+        setIsUserLoading(false)
+          })
+        
       });
     };
     getUser();
   }, []);
   const value = {
     currentUser,
+   isUserLoading
   };
  
 
